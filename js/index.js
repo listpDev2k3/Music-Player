@@ -7,6 +7,7 @@ const cdThumb = $(".cd-thumb");
 const audio = $("#audio");
 const playBnt = $(".btn-toggle-play");
 const player = $(".player");
+const progress=$("#progress")
 const app = {
     currentIndex: Math.floor(Math.random() * 5),
     isPlaying: false,
@@ -47,12 +48,11 @@ const app = {
             getCd.style.width = newWidthCd > 0 ? `${newWidthCd}px` : 0;
             getCd.style.opacity = newWidthCd / cdWidth;
         };
-        // Sử lý khi click play
+        // Sử lý khi click play/pause
         playBnt.onclick = () => {
             if (!_this.isPlaying) {
                 audio.play()
-                player.classList.add("playing");
-                _this.isPlaying = true;
+              
             }
             else {
                 audio.pause()
@@ -60,6 +60,24 @@ const app = {
                 _this.isPlaying = false;
             }
         }
+        audio.onplay = () => {
+            player.classList.add("playing");
+            _this.isPlaying = true;
+        }
+        audio.onpause = () => {
+            player.classList.remove("playing");
+            _this.isPlaying = false;
+        }
+        // khi tiến độ bài hát thay đổi 
+        audio.ontimeupdate = () => {
+            const progressValue= (audio.currentTime/audio.duration)*100
+            progress.value=Math.round(progressValue)
+        }
+        progress.onchange = (e) =>{
+            const seekTime = (e.target.value*audio.duration)/100
+            audio.currentTime=seekTime;
+        }   
+
     },
 
     loadCurrentSong: function () {
@@ -77,5 +95,5 @@ const app = {
 
     },
 };
-setInterval(app.start(), 5000)
-setInterval(console.log(2), 5000)
+app.start()
+
